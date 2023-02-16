@@ -1,12 +1,14 @@
 # Christmas_island_reptiles
 
-![Christmas Island Reptiles](https://github.com/tododge/christmas_island_reptiles/files/10751830/revisions_fig4.pdf "figure 4")
+![Christmas Island Reptiles](/fig4_github.png "figure 4")
 
 This workflow contains scripts used in [Dodge et al. (in review)](https://www.authorea.com/users/557855/articles/607316-genomes-of-two-extinct-in-the-wild-reptiles-from-christmas-island-reveal-distinct-evolutionary-histories-and-conservation-insights?commit=87274701232938aa298c07b9d2a5588c9b93a295).
 
 ## Software and dependencies
 
-The steps described below use the following software and assume that dependencies are on the user path:
+Computation for this project was conducted on the Artemis HPC machine at Syndey Uni and Pawsey Supercomputing Research Centre. 
+
+The following dependencies were used:
 
 * [minimap2](https://github.com/lh3/minimap2)
 * [GATK](https://gatk.broadinstitute.org/hc/en-us)
