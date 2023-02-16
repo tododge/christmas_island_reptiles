@@ -82,15 +82,43 @@ hifiasm -t 32 -D 20 -k 63 -r 9 --max-kocc 10000 -a 6 -s 0.65 -N 300 --hom-cov 30
 ```
 
 ### scaffold gecko genome with HiC
-* [Arima mapping pipeline](https://github.com/ArimaGenomics/mapping_pipeline)
+* [arima_modified_LG.sh](/arima_modified_LG.sh) modified from [Arima mapping pipeline](https://github.com/ArimaGenomics/mapping_pipeline)
 * [YaHS](https://github.com/c-zhou/yahs)
 
 first use the Arima mapping pipeline to map HiC reads to primary assembly generated with hifiasm
 ```
-bash 
+bash arima_modified_LG.sh
 ```
 
-scaffold the genome with YaHS
+scaffold the genome with YaHS. input files are `HiC.sortedName.bam` from the previous step and the contigs from hifiasm
 ```
-yahs leplis_V1.0.asm.bp.p_ctg.fa leplis_HiC_408044_AusARG_BRF_HG5YLDMXY_S4_rep2.V1.0.SM.sortedName.bam -o yahs_leplis_V1.0_scaff
+yahs leplis_V1.0.asm.bp.p_ctg.fa leplis_HiC_408044_AusARG_BRF_HG5YLDMXY_S4_rep2.V1.0.SM.sortedName.bam -o leplis_V1.0_HiC
 ```
+
+### evaluate HiC scaffolding
+* [YaHS](https://github.com/c-zhou/yahs)
+* samtools
+* [juicer_tools_1.19.02.jar](https://github.com/aidenlab/juicer/wiki/Download)
+
+generate HiC contact map using a combination of YaHS and juicer tools. more detailed instructions can be found on the YaHS github
+
+```
+samtools faidx leplis_V1.0.asm.bp.p_ctg.fa
+samtools leplis_V1.0_HiC_scaffolds_final.fasta
+
+cut -f1,2 leplis_V1.0_HiC_scaffolds_final.fasta > leplis_V1.0_HiC_scaffolds_final.chrom.sizes
+
+(yahs/juicer pre leplis_V1.0_HiC.bin leplis_V1.0_HiC_scaffolds_final.agp leplis_V1.0.asm.bp.p_ctg.fa.fai | /usr/bin/sort -k2,2d -k6,6d -T ./ -S64G --parallel=16 | awk 'NF' > alignments_sorted.txt.part) && (mv alignments_sorted.txt.part leplis_V1.0_HiC_alignments_sorted.txt)
+
+(java -jar -Xmx32G juicer_tools_1.19.02.jar pre leplis_V1.0_HiC_alignments_sorted.txt leplis_V1.0_HiC_scaffolds_final.hic.part leplis_V1.0_HiC_scaffolds_final.chrom.sizes) && (mv leplis_V1.0_HiC_scaffolds_final.hic.part leplis_V1.0_HiC_scaffolds_final.hic)
+```
+the leplis_V1.0_HiC_scaffolds_final.hic can be loaded into JuiceBox or other software, but cannot be edited
+
+the following steps create `.hic` and `.assembly` files that can be edited in JuiceBox
+```
+../yahs/juicer pre -a -o leplis_V1.0_HiC_out_JBAT leplis_V1.0_HiC.bin leplis_V1.0_HiC_scaffolds_final.agp leplis_V1.0.asm.bp.p_ctg.fa.fai > leplis_V1.0_HiC_out_JBAT_out_JBAT.log 2>&1
+
+(java -jar -Xmx64G juicer_tools_1.19.02.jar pre leplis_V1.0_HiC_out_JBAT.txt leplis_V1.0_HiC_out_JBAT.hic.part <(cat leplis_V1.0_HiC_out_JBAT.log  | grep PRE_C_SIZE | awk '{print $2" "$3}')) && (mv leplis_V1.0_HiC_out_JBAT.hic.part leplis_V1.0_HiC_out_JBAT.hic)
+```
+#the output files leplis_V1.0_HiC_out_JBAT.hic and leplis_V1.0_HiC_out_JBAT.assembly can now be loaded into juicebox
+
