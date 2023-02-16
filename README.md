@@ -15,7 +15,7 @@ The following dependencies were used:
 * [PSMC](https://github.com/lh3/psmc)
 * [R](https://cran.r-project.org/)
 
-## PacBio HiFi genome assembly
+## Genome Assembly
 
 ### read pre-processing
 
@@ -74,11 +74,13 @@ the basic hifiasm command looks like this `hifiasm -o asm fq.gz` and gives sever
 assemble skink genome increasing `-k` and `-r` parameters
 ```
 hifiasm -t 32 -k 63 -r 5 -o cryege_V1.0.asm 359702_TSI_AGRF_DA149190.hifi.ccs.filt.fastq.gz 359702_TSI_AGRF_DA149222.hifi.ccs.filt.fastq.gz
+awk '/^S/{print ">"$2;print $3}' cryege_V1.0.asm.bp.p_ctg.gfa > cryege_V1.0.asm.bp.p_ctg.fa
 ```
 
 assemble gecko genome increasing `-D`, `-k`, `-r`, `--max-kocc`, `-a`, `-s`, `-N`, and `--hom-cov` parameters
 ```
 hifiasm -t 32 -D 20 -k 63 -r 9 --max-kocc 10000 -a 6 -s 0.65 -N 300 --hom-cov 30 -o leplis_V1.0.asm 359703_TSI_AGRF_DA149208.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA149210.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA162797.hifi.ccs.filt.fastq.gz
+awk '/^S/{print ">"$2;print $3}' leplis_V1.0.asm.bp.p_ctg.gfa > leplis_V1.0.asm.bp.p_ctg.fa
 ```
 
 ### scaffold gecko genome with HiC
@@ -99,6 +101,7 @@ yahs leplis_V1.0.asm.bp.p_ctg.fa leplis_HiC_408044_AusARG_BRF_HG5YLDMXY_S4_rep2.
 * [YaHS](https://github.com/c-zhou/yahs)
 * samtools
 * [juicer_tools_1.19.02.jar](https://github.com/aidenlab/juicer/wiki/Download)
+* [Juicebox](https://github.com/aidenlab/Juicebox) (optional for HiC contact map viewing/assembly editing)
 
 generate HiC contact map using a combination of YaHS and juicer tools. more detailed instructions can be found on the YaHS github
 
@@ -120,5 +123,4 @@ the following steps create `.hic` and `.assembly` files that can be edited in Ju
 
 (java -jar -Xmx64G juicer_tools_1.19.02.jar pre leplis_V1.0_HiC_out_JBAT.txt leplis_V1.0_HiC_out_JBAT.hic.part <(cat leplis_V1.0_HiC_out_JBAT.log  | grep PRE_C_SIZE | awk '{print $2" "$3}')) && (mv leplis_V1.0_HiC_out_JBAT.hic.part leplis_V1.0_HiC_out_JBAT.hic)
 ```
-#the output files leplis_V1.0_HiC_out_JBAT.hic and leplis_V1.0_HiC_out_JBAT.assembly can now be loaded into juicebox
 
