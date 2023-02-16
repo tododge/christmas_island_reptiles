@@ -21,7 +21,7 @@ The following dependencies were used:
 
 * [bamtools](https://github.com/pezmaster31/bamtools)
 * [HiFiAdapterFilt](https://github.com/sheinasim/HiFiAdapterFilt)
-\
+
 remove non-HiFi reads ccs.bam files for the skink
 ```
 bamtools filter -in 359702_TSI_AGRF_DA149190.ccs.bam -out 359702_TSI_AGRF_DA149190.hifi.ccs.bam -tag "rq":">-0.99"
