@@ -21,9 +21,6 @@ The following dependencies were used:
 
 * [bamtools](https://github.com/pezmaster31/bamtools)
 * [HiFiAdapterFilt](https://github.com/sheinasim/HiFiAdapterFilt)
-* [NanoPlot](https://github.com/wdecoster/NanoPlot)
-* [Hifiasm](https://github.com/chhylp123/hifiasm)
-
 \
 remove non-HiFi reads ccs.bam files for the skink
 ```
@@ -56,7 +53,8 @@ bash hifiadapterfilt.sh -t 32 -p 359703_TSI_AGRF_DA162797.hifi.ccs
 ```
 \
 ### assess read quality
-
+* [NanoPlot](https://github.com/wdecoster/NanoPlot)
+\
 assess HiFi read quality with nanoplot
 ```
 #if fails, try downgrading seaborn
@@ -66,20 +64,33 @@ NanoPlot --fastq 359702_TSI_AGRF_DA149190.hifi.ccs.filt.fastq.gz 359702_TSI_AGRF
 NanoPlot --fastq 359703_TSI_AGRF_DA149208.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA149210.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA162797.hifi.ccs.filt.fastq.gz -p 359703_TSI_AGRF_combined.hifi.ccs.filt.fastq.gz. -t 4
 ```
 
-### assemble genome with hifiasm
+### assemble genomes with hifiasm
+
+* [Hifiasm](https://github.com/chhylp123/hifiasm)
 
 the basic hifiasm command looks like this `hifiasm -o asm fq.gz` and gives several assembly graphs as output. several hifiasm parameters increase contiguity at the cost of runtime. from some testing, it appears how well each parameter performs will depend on features of each species' genome that are still unknown to me at present. after fairly extensive parameter testing, we settled on the following parameters for the skink and gecko below:
 \
 \
 assemble skink genome increasing `-k` and `-r` parameters
 ```
-export PATH=~/hifiasm/:$PATH
 hifiasm -t 32 -k 63 -r 5 -o cryege_V1.0.asm 359702_TSI_AGRF_DA149190.hifi.ccs.filt.fastq.gz 359702_TSI_AGRF_DA149222.hifi.ccs.filt.fastq.gz
 ```
 
 assemble gecko genome increasing `-D`, `-k`, `-r`, `--max-kocc`, `-a`, `-s`, `-N`, and `--hom-cov` parameters
 ```
-export PATH=~/hifiasm/:$PATH
-hifiasm -t 32 -D 20 -k 63 -r 9 --max-kocc 10000 -a 6 -s 0.65 -N 300 --hom-cov 30 -o leplis_V1.0.asm 359703_TSI_AGRF_DA149208.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA149210.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA162797.hifi.ccs.filt.fastq.gz```
+hifiasm -t 32 -D 20 -k 63 -r 9 --max-kocc 10000 -a 6 -s 0.65 -N 300 --hom-cov 30 -o leplis_V1.0.asm 359703_TSI_AGRF_DA149208.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA149210.hifi.ccs.filt.fastq.gz 359703_TSI_AGRF_DA162797.hifi.ccs.filt.fastq.gz
+```
 
+### scaffold gecko genome with HiC
+* [Arima mapping pipeline](https://github.com/ArimaGenomics/mapping_pipeline)
+* [YaHS](https://github.com/c-zhou/yahs)
 
+first use the Arima mapping pipeline to map HiC reads to primary assembly generated with hifiasm
+```
+bash 
+```
+
+scaffold the genome with YaHS
+```
+yahs leplis_V1.0.asm.bp.p_ctg.fa leplis_HiC_408044_AusARG_BRF_HG5YLDMXY_S4_rep2.V1.0.SM.sortedName.bam -o yahs_leplis_V1.0_scaff
+```
